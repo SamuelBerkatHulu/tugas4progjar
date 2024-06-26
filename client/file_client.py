@@ -103,11 +103,11 @@ def main():
             remote_get(filename)
         elif choice == "3":
             filename = input("Enter the filename to upload: ")
-            if remote_upload(filename):
+            if x_upload(filename):
                 print(f"File {filename} uploaded successfully.")
         elif choice == "4":
             filename = input("Enter the filename to delete: ")
-            if remote_delete(filename):
+            if y_delete(filename):
                 print(f"File {filename} deleted successfully.")
         elif choice == "5":
             print("Exiting...")

@@ -3,14 +3,14 @@ import json
 import base64
 import logging
 
-server_address = ('0.0.0.0', 6666)
+server_address = ('0.0.0.0', 9999)
 
 def send_command(command_str=""):
     global server_address
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect(server_address)
-    logging.warning(f"connecting to {server_address}")
     try:
+        sock.connect(server_address)
+        logging.warning(f"connecting to {server_address}")
         logging.warning(f"sending message ")
         sock.sendall(command_str.encode())
         data_received = ""
@@ -25,14 +25,19 @@ def send_command(command_str=""):
         hasil = json.loads(data_received)
         logging.warning("data received from server:")
         return hasil
-    except:
-        logging.warning("error during data receiving")
+    except socket.error as e:
+        logging.warning(f"socket error: {e}")
         return False
+    except json.JSONDecodeError as e:
+        logging.warning(f"JSON decode error: {e}")
+        return False
+    finally:
+        sock.close()
 
 def remote_list():
     command_str = f"LIST"
     hasil = send_command(command_str)
-    if (hasil['status'] == 'OK'):
+    if hasil and hasil['status'] == 'OK':
         print("daftar file : ")
         for nmfile in hasil['data']:
             print(f"- {nmfile}")
@@ -44,12 +49,11 @@ def remote_list():
 def remote_get(filename=""):
     command_str = f"GET {filename}"
     hasil = send_command(command_str)
-    if (hasil['status'] == 'OK'):
+    if hasil and hasil['status'] == 'OK':
         namafile = hasil['data_namafile']
         isifile = base64.b64decode(hasil['data_file'])
-        fp = open(namafile, 'wb+')
-        fp.write(isifile)
-        fp.close()
+        with open(namafile, 'wb+') as fp:
+            fp.write(isifile)
         return True
     else:
         print("Gagal")
@@ -61,7 +65,7 @@ def x_upload(filename=""):
             file_content = base64.b64encode(f.read()).decode()
         command_str = f"UPLOAD {filename} {file_content}"
         hasil = send_command(command_str)
-        if hasil['status'] == 'OK':
+        if hasil and hasil['status'] == 'OK':
             print(hasil['data'])
             return True
         else:
@@ -74,7 +78,7 @@ def x_upload(filename=""):
 def y_delete(filename=""):
     command_str = f"DELETE {filename}"
     hasil = send_command(command_str)
-    if hasil['status'] == 'OK':
+    if hasil and hasil['status'] == 'OK':
         print(hasil['data'])
         return True
     else:
@@ -116,5 +120,5 @@ def main():
             print("Invalid choice. Please try again.")
 
 if __name__ == '__main__':
-    server_address = ('0.0.0.0', 6666)
+    server_address = ('0.0.0.0', 9999)
     main()

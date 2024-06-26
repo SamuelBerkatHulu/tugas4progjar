@@ -55,7 +55,7 @@ def remote_get(filename=""):
         print("Gagal")
         return False
 
-def remote_upload(filename=""):
+def x_upload(filename=""):
     try:
         with open(filename, 'rb') as f:
             file_content = base64.b64encode(f.read()).decode()
@@ -71,7 +71,7 @@ def remote_upload(filename=""):
         print(f"File {filename} tidak ditemukan")
         return False
 
-def remote_delete(filename=""):
+def y_delete(filename=""):
     command_str = f"DELETE {filename}"
     hasil = send_command(command_str)
     if hasil['status'] == 'OK':
@@ -83,11 +83,11 @@ def remote_delete(filename=""):
 
 def print_menu():
     print("File Client Menu:")
-    print("1. List files")
-    print("2. Get file")
-    print("3. Upload file")
-    print("4. Delete file")
-    print("5. Exit")
+    print("1. Daftar files")
+    print("2. Dapatkan file")
+    print("3. Unggah file")
+    print("4. Hapus file")
+    print("5. Keluar")
 
 def main():
     global server_address
